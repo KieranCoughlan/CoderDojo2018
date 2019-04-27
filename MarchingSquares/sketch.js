@@ -1,5 +1,5 @@
 let maze = [];
-let cols = 65;
+let cols = 67;
 let rows = 51;
 
 let solid = [-0.5, -0.5,
