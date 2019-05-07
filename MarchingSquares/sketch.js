@@ -1,6 +1,7 @@
 let maze = [];
-let cols = 65;
-let rows = 51;
+let cols = 30;
+let rows = 30;
+let threshold = 0.4;
 
 let solid = [-0.5, -0.5,
     0.5, -0.5,
@@ -31,11 +32,9 @@ let oneCorner = [-0.5, -0,
 
 function setup() {
     createCanvas(792, 600);
-    background("Brown");
 
     angleMode(DEGREES);
     let nscale = 10.0;
-    let threshold = 0.4;
     let border = 2;
 
     for (let x = 0; x < cols; x++) {
@@ -46,48 +45,60 @@ function setup() {
                 y > rows - (border + 1)){
                     maze[x][y] = 1;
             }else{
-                let v = noise(x/nscale, y/nscale);
-                maze[x][y] = v > threshold ? 1 : 0;
+                maze[x][y] = noise(x/nscale, y/nscale);
             }
         }
     }
+}
 
-    scale(12);
-    //stroke('white');
-    //strokeWeight(0.01);
-    noStroke();
+function draw() {
+    background("Grey");
+
+    if (keyIsDown(UP_ARROW) && threshold < 1.0){
+        threshold += 0.01;
+    }
+    else if (keyIsDown(DOWN_ARROW) && threshold > 0.0){
+        threshold -= 0.01;
+    }
+    else if (keyIsDown(RIGHT_ARROW)){
+        threshold = 0.4;
+    }
+
+    scale(24);
+    stroke('white');
+    strokeWeight(0.01);
+    //noStroke();
     fill('black');
 
     for (let x = 0; x < cols - 1; x++) {
         for (let y = 0; y < rows - 1; y++) {
-            let c0 = maze[x][y];
-            let c1 = maze[x + 1][y];
-            let c2 = maze[x + 1][y + 1];
-            let c3 = maze[x][y + 1];
-            draw(c0, c1, c2, c3, x + 0.5, y + 0.5);
+            let c0 = maze[x][y] > threshold ? 1 : 0;
+            let c1 = maze[x + 1][y] > threshold ? 1 : 0;
+            let c2 = maze[x + 1][y + 1] > threshold ? 1 : 0;
+            let c3 = maze[x][y + 1] > threshold ? 1 : 0;
+            drawCell(c0, c1, c2, c3, x + 0.5, y + 0.5);
         }
     }
 
    
-    // for (let x = 0; x < cols; x++) {
-    //     for (let y = 0; y < rows; y++) {
-    //         if (maze[x][y] == 1){
-    //             fill('green');
-    //         }
-    //         else {
-    //             fill('red');
-    //         }
+    for (let x = 0; x < cols; x++) {
+        for (let y = 0; y < rows; y++) {
+            if (maze[x][y] < threshold){
+                fill('green');
+            }
+            else {
+                fill('red');
+            }
             
-    //         ellipse(x, y, 0.1, 0.1);
-    //     }
-    // }
+            ellipse(x, y, 0.1, 0.1);
+        }
+    }
+
+
+    
 }
 
-function draw() {
-
-}
-
-function draw(c0, c1, c2, c3, x, y) {
+function drawCell(c0, c1, c2, c3, x, y) {
     var casenum = GetCaseNum(c0, c1, c2, c3);
 
     switch (casenum) {
