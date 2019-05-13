@@ -1,7 +1,8 @@
 let maze = [];
-let cols = 30;
-let rows = 30;
+let cols = 34;
+let rows = 26;
 let threshold = 0.4;
+let drawGrids = false;
 
 let solid = [-0.5, -0.5,
     0.5, -0.5,
@@ -41,7 +42,7 @@ function setup() {
         maze[x] = [];
         for (let y = 0; y < rows; y++) {
             if (x < border || y < border  || 
-                x > cols - (border  + 1) || 
+                x > cols - (border + 1) || 
                 y > rows - (border + 1)){
                     maze[x][y] = 1;
             }else{
@@ -54,20 +55,16 @@ function setup() {
 function draw() {
     background("Grey");
 
-    if (keyIsDown(UP_ARROW) && threshold < 1.0){
-        threshold += 0.01;
-    }
-    else if (keyIsDown(DOWN_ARROW) && threshold > 0.0){
-        threshold -= 0.01;
-    }
-    else if (keyIsDown(RIGHT_ARROW)){
-        threshold = 0.4;
-    }
+    handleInput();
 
     scale(24);
     stroke('white');
     strokeWeight(0.01);
-    //noStroke();
+
+    if (drawGrids == false){
+      noStroke();
+    }
+
     fill('black');
 
     for (let x = 0; x < cols - 1; x++) {
@@ -80,22 +77,33 @@ function draw() {
         }
     }
 
-   
-    for (let x = 0; x < cols; x++) {
-        for (let y = 0; y < rows; y++) {
-            if (maze[x][y] < threshold){
-                fill('green');
+    if (drawGrids == true){
+        for (let x = 0; x < cols; x++) {
+            for (let y = 0; y < rows; y++) {
+                fill(maze[x][y] < threshold ? 'green' : 'red');
+                
+                ellipse(x, y, 0.1, 0.1);
             }
-            else {
-                fill('red');
-            }
-            
-            ellipse(x, y, 0.1, 0.1);
         }
     }
+}
 
+function handleInput() {
+    if (keyIsDown(UP_ARROW) && threshold < 1.0) {
+        threshold += 0.01;
+    }
+    else if (keyIsDown(DOWN_ARROW) && threshold > 0.0) {
+        threshold -= 0.01;
+    }
+    else if (keyIsDown(RIGHT_ARROW)) {
+        threshold = 0.4;
+    }
+}
 
-    
+function keyTyped(){
+    if (key == ' '){
+        drawGrids = !drawGrids;
+    }
 }
 
 function drawCell(c0, c1, c2, c3, x, y) {
